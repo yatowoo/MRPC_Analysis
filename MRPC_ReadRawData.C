@@ -36,18 +36,16 @@
 *    v0.2.0, 2016.12.30, #include<MRPC_Typedef.h>, by yato
 *    v0.2.1, 2016.12.31, modified with changes in <MRPC_Typedef.h>, by yato
 *    v0.3.0, 2017.01.02, add #ifdef option for single file usage, by yato
+*    v0.4.0, 2017.02.13, change Directory function to gSystem
+*    issue, 2017.02.1, WinNT CINT cannot handle {} in PREPROCCESOR #if#endif
 */
 
 #include<cstring>
 
 #include "MRPC_Typedef.h"
 
-//#define MULTI_FILE	// Merge for 1 Exp .root
+#define MULTI_FILE	// Merge for 1 Exp .root
 //#define EXP_SCAN	// Scan Directory and 1 .root for 1 raw data
-
-#if defined(MULTI_FILE) || defined(EXP_SCAN)
-  #include<dirent.h>
-#endif
 
 const int BUF_SIZE = 1024;
 const int N_COL = 112;
@@ -60,16 +58,17 @@ int MRPC_ReadRawData(){
 
 #if defined(MULTI_FILE) || defined(EXP_SCAN)
   // Data Folder Path
-  string path = "../DATA/mrpc_teach_exp/test/";
-  string file;
+  TString path = "../DATA/mrpc_teach_exp/";
+  TString file;
   // Directory Read
-  DIR* dp = opendir(path.c_str());
-  dirent* dir;
-  dir = readdir(dp); // .
-  dir = readdir(dp); // ..
+  void* dir = gSystem->OpenDirectory(path.Data());
+  const char* fileName = NULL;
+  fileName = gSystem->GetDirEntry(dir);
+  fileName = gSystem->GetDirEntry(dir);
+
 #else // ONLY 1 file to read
   string file = "../DATA/mrpc_teach_exp/test/PMT#3_Test_2016-12-13_21_35.txt";
-#endif // v0.3
+#endif
 
   ifstream fin;
   stringstream sstr;
@@ -92,11 +91,14 @@ int MRPC_ReadRawData(){
 
 #if defined(MULTI_FILE) || defined(EXP_SCAN)
   // Directory traverse
-  while((dir = readdir(dp))!= NULL){
-    file = path + dir->d_name;
-#endif // v0.3
+  while((fileName = gSystem->GetDirEntry(dir)) != NULL){
+    file = fileName;
+    if(!file.Contains("MRPC_Teach_Exp"))
+	continue;
+    file = path + fileName;
+#endif
 
-    fin.open(file);
+    fin.open(file.Data());
     if(fin.is_open()){
       file_count ++;
       cout << file << endl;
@@ -141,9 +143,8 @@ int MRPC_ReadRawData(){
 
 #if defined(MULTI_FILE) || defined(EXP_SCAN)
   }// for each file
-  closedir(dp);
   cout << file_count << endl;
-#endif // v0.3
+#endif
   /*END*/
   
   // Write to ROOT file
