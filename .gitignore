@@ -1,6 +1,6 @@
 # Data file
-.root
-.dat
+*.root
+*.dat
 
 # Windows image file caches
 Thumbs.db

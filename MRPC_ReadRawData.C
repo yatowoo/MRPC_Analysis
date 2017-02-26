@@ -17,11 +17,11 @@ int MRPC_ReadRawData(){
   // Experiment Title
   TString exp_str = "MRPC Experiment";
   // Data Path - can be dir. or filename
-  TString path = "../DATA/mrpc_teach_exp/";
+  TString path = "./data/";
   // Read File match pattern - EMPTY means all
   TString pattern = "MRPC_Teach_Exp";
   // Output ROOT File
-  TFile* root_file = new TFile("../DATA/test_MRPC.root","RECREATE");
+  TFile* root_file = new TFile("./test_MRPC.root","RECREATE");
 
 // Initialize
   // Experiment Info. 
