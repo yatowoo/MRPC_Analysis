@@ -1,3 +1,7 @@
+# Data file
+.root
+.dat
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
